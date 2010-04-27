@@ -5,10 +5,9 @@ module Rack
     # - :web_property_id 
     #
     # Optional:
-    # - :utm_image_path: if set, then the Image module will be used as well 
+    # - :track_via_utm_image: if set, then the Image module will be used as well 
     #   (see Config#utm_image_path?)
     #
-    # If the Image module is 
     class Config
       PROPERTIES = {
         :web_property_id                => nil,  
@@ -16,7 +15,8 @@ module Rack
         :multiple_top_level_domains     => nil,  
         :domain_name                    => nil,  
         :prefix                         => nil,  
-        :utm_image_path                 => nil,  
+        :track_via_utm_image            => false,
+        :utm_image_path                 => '/ga.gif',  
         :utm_image_cookie_name          => '__utmmobile',  
         :utm_image_cookie_persistence   => 63072000,  
         :utm_image_body                 => "GIF89a\001\000\001\000\200\000\000\377\377\377\000\000\000!\371\004\001\000\000\000\000,\000\000\000\000\001\000\001\000\000\002\002D\001\000;",  
@@ -34,7 +34,7 @@ module Rack
       end
 
       def utm_image_path?(path)
-        utm_image_path && path =~ /^#{Regexp.escape(utm_image_path)}/
+        track_via_utm_image && path =~ /^#{Regexp.escape(utm_image_path)}/
       end
 
       def random_integer

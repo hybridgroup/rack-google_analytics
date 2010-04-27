@@ -18,9 +18,7 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
   def test_image_path_returns_transparent_image
     Curl::Easy.clear_method_call_registry
     
-    path = '/ga.gif'
-    
-    request(:path => path, :utm_image_path => path) do |app, req|
+    request(:path => default_config.utm_image_path, :track_via_utm_image => true) do |app, req|
       assert_equal app.config.utm_image_body, req.body
       assert_equal 'image/gif', req.headers['Content-Type']
     end
