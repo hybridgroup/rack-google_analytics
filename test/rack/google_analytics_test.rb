@@ -20,8 +20,8 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
     
     path = '/ga.gif'
     
-    request(:path => path, :google_analytics_image_path => path) do |app, req|
-      assert_equal app.config.transparent_image_body, req.body
+    request(:path => path, :utm_image_path => path) do |app, req|
+      assert_equal app.config.utm_body, req.body
       assert_equal 'image/gif', req.headers['Content-Type']
     end
     
@@ -29,10 +29,10 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
     assert_respond_to Curl::Easy.method_call_registry[:perform].last[1], :call
   end
 
-  def test_google_analytics_image_path_not_used_if_request
-    request(:path => '/hello', :google_analytics_image_path => '/ga.gif') do |app, req|
+  def test_utm_image_path_not_used_if_request
+    request(:path => '/hello', :utm_image_path => '/ga.gif') do |app, req|
       assert_equal 'text/html', req.headers['Content-Type']
-      assert_not_equal app.config.transparent_image_body, req.body
+      assert_not_equal app.config.utm_body, req.body
     end
   end
 

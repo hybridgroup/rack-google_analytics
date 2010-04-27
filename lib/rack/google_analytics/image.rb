@@ -6,7 +6,7 @@ module Rack #:nodoc:
   module GoogleAnalytics
     module Image
       def self.new(env, config)
-        config.google_analytics_image_path?(env['PATH_INFO']) ? Match.new(env, config) : NoMatch.new
+        config.utm_image_path?(env['PATH_INFO']) ? Match.new(env, config) : NoMatch.new
       end
       class NoMatch; def to_a; nil; end; end
       class Match < DelegateClass(Rack::Request)
@@ -25,7 +25,7 @@ module Rack #:nodoc:
           @account = params['utmac']
           @guid = env['HTTP_X_DCMGUID']
           @user_agent = env['HTTP_USER_AGENT']
-          @cookie = cookies[config.cookie_name]
+          @cookie = cookies[config.utm_cookie_name]
           @document_referrer = URI.decode(params['utmr'] || '-')
           @document_path = URI.decode(params['utmr'] || '')
         end
@@ -42,14 +42,14 @@ module Rack #:nodoc:
           send_request_to_google_analytics
 
           Rack::Response.new([body],200,headers.dup) do |response|
-            response.set_cookie(config.cookie_name, {:value => visitor_id, :expires => (@time_stamp + config.cookie_persistence)})
+            response.set_cookie(config.utm_cookie_name, {:value => visitor_id, :expires => (@time_stamp + config.utm_cookie_persistence)})
           end.to_a
         end
 
         protected
         
         def body
-          config.transparent_image_body
+          config.utm_body
         end
 
         def random_integer
