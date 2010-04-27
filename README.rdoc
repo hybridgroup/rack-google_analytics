@@ -13,8 +13,15 @@ Rack middleware to embed Google Analytics tracking code.
 
 == Configuring for a Rails App
 
-  config.gem "ambethia-rack-google_analytics", :lib => "rack/google_analytics", :source => "http://gems.github.com"
+  config.gem "rack-google_analytics", :lib => "rack/google_analytics"
   config.middleware.use "Rack::GoogleAnalytics", :web_property_id => "UA-0000000-1"
+
+== Configuration Options
+When declaring the middleware, you can also add :track_via_utm_image
+
+  config.middleware.use "Rack::GoogleAnalytics", :web_property_id => "UA-0000000-1", :track_via_utm_image => true
+
+This enables Google Analytics for Mobile Websites module by accessing /ga.gif (see http://code.google.com/apis/mobileanalytics/docs/web/)
 
 == TODO and Motivations
 
