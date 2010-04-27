@@ -22,7 +22,7 @@ module Rack #:nodoc:
         @account = params['utmac']
         @guid = env['HTTP_X_DCMGUID']
         @user_agent = env['HTTP_USER_AGENT']
-        @cookie = cookies[config.utm_cookie_name]
+        @cookie = cookies[config.utm_image_cookie_name]
         @document_referrer = URI.decode(params['utmr'] || '-')
         @document_path = URI.decode(params['utmr'] || '')
       end
@@ -35,27 +35,27 @@ module Rack #:nodoc:
           "Expires" => "Wed, 17 Sep 1975 21:32:10 GMT"
         }
 
-        headers['X_GA_MOBILE_URL'] = utm_url if debug?
+        headers['X_GA_MOBILE_URL'] = utm_image_url if debug?
         send_request_to_google_analytics
 
         Rack::Response.new([body],200,headers.dup) do |response|
-          response.set_cookie(config.utm_cookie_name, {:value => visitor_id, :expires => (@time_stamp + config.utm_cookie_persistence)})
+          response.set_cookie(config.utm_image_cookie_name, {:value => visitor_id, :expires => (@time_stamp + config.utm_image_cookie_persistence)})
         end.to_a
       end
 
       protected
 
       def body
-        config.utm_body
+        config.utm_image_body
       end
 
       def random_integer
         config.random_integer
       end
 
-      def utm_url
-        @utm_url ||= "#{config.utm_google_image_url}?" <<
-        "utmwv=#{config.utm_version}" <<
+      def utm_image_url
+        @utm_image_url ||= "#{config.utm_image_google_image_url}?" <<
+        "utmwv=#{config.utm_image_version}" <<
         "&utmn=#{random_integer}" <<
         "&utmhn=#{URI.encode('map.nd.edu')}" <<
         "&utmr=#{URI.encode(document_referrer)}" <<
@@ -67,7 +67,7 @@ module Rack #:nodoc:
       end
 
       def send_request_to_google_analytics
-        Curl::Easy.perform(utm_url) do |curl|
+        Curl::Easy.perform(utm_image_url) do |curl|
           curl.headers['User-Agent'] = user_agent
           curl.headers['Accepts-Language'] = env['HTTP_ACCEPT_LANGUAGE']
           curl.verbose = debug?

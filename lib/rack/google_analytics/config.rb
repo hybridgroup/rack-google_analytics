@@ -7,7 +7,8 @@ module Rack
     # Optional:
     # - :utm_image_path: if set, then the Image module will be used as well 
     #   (see Config#utm_image_path?)
-    # 
+    #
+    # If the Image module is 
     class Config
       PROPERTIES = {
         :web_property_id                => nil,  
@@ -16,11 +17,11 @@ module Rack
         :domain_name                    => nil,  
         :prefix                         => nil,  
         :utm_image_path                 => nil,  
-        :utm_cookie_name                => '__utmmobile',  
-        :utm_cookie_persistence         => 63072000,  
-        :utm_body                       => "GIF89a\001\000\001\000\200\000\000\377\377\377\000\000\000!\371\004\001\000\000\000\000,\000\000\000\000\001\000\001\000\000\002\002D\001\000;",  
-        :utm_google_image_url           => 'http://www.google-analytics.com/__utm.gif',
-        :utm_version                    => '4.4sp',  
+        :utm_image_cookie_name          => '__utmmobile',  
+        :utm_image_cookie_persistence   => 63072000,  
+        :utm_image_body                 => "GIF89a\001\000\001\000\200\000\000\377\377\377\000\000\000!\371\004\001\000\000\000\000,\000\000\000\000\001\000\001\000\000\002\002D\001\000;",  
+        :utm_image_google_image_url     => 'http://www.google-analytics.com/__utm.gif',
+        :utm_image_version              => '4.4sp',  
       }.freeze
       PROPERTIES.each do |key, value|
         attr_reader key
