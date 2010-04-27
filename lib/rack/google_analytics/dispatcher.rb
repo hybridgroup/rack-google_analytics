@@ -22,7 +22,11 @@ module Rack
       protected
 
       def short_circuit_for_image(env)
-        Image.new(env, config).to_a
+        if response = Image.new(env, config)
+          response.to_a
+        else
+          nil
+        end
       end
 
       # In this case, we need to call the app to get

@@ -25,7 +25,7 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
       assert_equal 'image/gif', req.headers['Content-Type']
     end
     
-    assert_match /^#{Regexp.escape(default_config.utm_gif_location)}\?/, Curl::Easy.method_call_registry[:perform].last[0]
+    assert_match /^#{Regexp.escape(default_config.utm_google_image_url)}\?/, Curl::Easy.method_call_registry[:perform].last[0]
     assert_respond_to Curl::Easy.method_call_registry[:perform].last[1], :call
   end
 
@@ -127,6 +127,6 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
     end
 
     def default_config
-      @default_config ||= Rack::GoogleAnalytics::Config.new
+      @default_config ||= Rack::GoogleAnalytics::Config.new(:web_property_id => WEB_PROPERTY_ID)
     end
 end
