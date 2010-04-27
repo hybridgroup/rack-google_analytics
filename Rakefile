@@ -10,6 +10,9 @@ begin
     gem.email = "jasper@ambethia.com"
     gem.homepage = "http://github.com/ambethia/rack-google_analytics"
     gem.authors = ["Jason L Perry"]
+    gem.add_dependency 'rack', '>= 0.9.1'
+    gem.add_dependency 'curb', '>= 0.7.1'
+    gem.add_development_dependency 'test-unit', '>= 2.0.7'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

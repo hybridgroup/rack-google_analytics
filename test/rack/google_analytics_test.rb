@@ -1,7 +1,40 @@
 require 'test_helper'
 require 'rack/mock'
-
+require 'test/unit'
+class Curl::Easy
+  class << self
+    attr_reader :method_call_registry
+    def clear_method_call_registry
+      @method_call_registry = nil
+    end
+    def perform(*args, &block)
+      @method_call_registry ||= {}
+      @method_call_registry[:perform] ||= []
+      @method_call_registry[:perform] << [args, block].flatten
+    end
+  end
+end
 class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
+  def test_image_path_returns_transparent_image
+    Curl::Easy.clear_method_call_registry
+    
+    path = '/ga.gif'
+    
+    request(:path => path, :google_analytics_image_path => path) do |app, req|
+      assert_equal app.config.transparent_image_body, req.body
+      assert_equal 'image/gif', req.headers['Content-Type']
+    end
+    
+    assert_match /^#{Regexp.escape(default_config.utm_gif_location)}\?/, Curl::Easy.method_call_registry[:perform].last[0]
+    assert_respond_to Curl::Easy.method_call_registry[:perform].last[1], :call
+  end
+
+  def test_google_analytics_image_path_not_used_if_request
+    request(:path => '/hello', :google_analytics_image_path => '/ga.gif') do |app, req|
+      assert_equal 'text/html', req.headers['Content-Type']
+      assert_not_equal app.config.transparent_image_body, req.body
+    end
+  end
 
   def test_embed_tracking_code_at_the_end_of_html_body
     assert_match TRACKER_EXPECT, request.body
@@ -21,7 +54,7 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
 
   def test_shoud_buff_content_length_by_the_size_of_tracker_code
     request do |app, req|
-      assert_equal HTML_DOC.length + app.send(:tracking_code, WEB_PROPERTY_ID).length, req.content_length
+      assert_equal HTML_DOC.length + app.config.tracking_code.length, req.content_length
     end
   end
   
@@ -76,8 +109,10 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
     EOF
 
     def request(opts = {})
+      opts = opts.clone
+      path = opts.delete(:path) || '/'
       @application = app(opts)
-      @request = Rack::MockRequest.new(@application).get("/")
+      @request = Rack::MockRequest.new(@application).get(path)
       yield(@application, @request) if block_given?
       @request
     end
@@ -91,4 +126,7 @@ class Rack::GoogleAnalyticsTest < Test::Unit::TestCase
       Rack::GoogleAnalytics.new(rack_app, opts)
     end
 
+    def default_config
+      @default_config ||= Rack::GoogleAnalytics::Config.new
+    end
 end
