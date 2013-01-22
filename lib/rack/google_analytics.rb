@@ -7,7 +7,11 @@ module Rack #:nodoc:
       if headers["Content-Type"] =~ /text\/html|application\/xhtml\+xml/
         body = ""
         response.each { |part| body << part }
-        index = body.rindex("</body>")
+        if options[:position] == :head
+          index = body.rindex("</head>")
+        else
+          index = body.rindex("</body>")
+        end
         if index
           if options[:async]
             body.insert(index, tracking_code_async(options[:web_property_id]))
