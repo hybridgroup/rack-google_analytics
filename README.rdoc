@@ -20,6 +20,10 @@ Rack middleware to embed Google Analytics tracking code.
 
   config.middleware.use "Rack::GoogleAnalytics", :web_property_id => "UA-0000000-1", :async => true
 
+  To put code in `<head>` instead of `<body>`, pass `:position => :head` option
+
+  config.middleware.use "Rack::GoogleAnalytics", :web_property_id => "UA-0000000-1", :async => true, :position => :head  
+
 == TODO and Motivations
 
 This isn't very "feature rich", because I've mostly written it as an
